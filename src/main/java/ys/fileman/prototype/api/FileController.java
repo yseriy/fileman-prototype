@@ -22,6 +22,7 @@ public class FileController {
                             @PathVariable String brand, @PathVariable String contract,
                             @PathVariable String account,
                             @RequestHeader(value = "FTP-AUTH-TOKEN") String token) {
+
         return fileServiceFacade.list(httpServletRequest, brand, contract, account, token, pathDTO);
     }
 }
