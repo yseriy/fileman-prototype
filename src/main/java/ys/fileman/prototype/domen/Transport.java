@@ -1,4 +1,4 @@
-package ys.fileman.prototype.external;
+package ys.fileman.prototype.domen;
 
 import ys.fileman.prototype.domen.File;
 import ys.fileman.prototype.domen.Path;

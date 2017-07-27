@@ -1,4 +1,4 @@
-package ys.fileman.prototype.web.dto;
+package ys.fileman.prototype.api.dto;
 
 import lombok.Data;
 
