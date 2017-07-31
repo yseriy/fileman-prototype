@@ -12,5 +12,4 @@ public class FilemanPrototypeApplicationTests {
     @Test
     public void contextLoads() {
     }
-
 }
