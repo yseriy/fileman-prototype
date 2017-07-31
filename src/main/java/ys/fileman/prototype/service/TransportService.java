@@ -6,7 +6,7 @@ import ys.fileman.prototype.domen.Transport;
 @Service
 public class TransportService {
 
-    public Transport getTransport(String brand, String contract, String account, String token) {
+    public Transport getFTPTransport(String brand, String contract, String account, String token) {
         return null;
     }
 }
