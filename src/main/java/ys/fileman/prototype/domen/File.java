@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class File {
-
     private String type;
     private Long size;
     private String owner;

@@ -4,10 +4,11 @@ import org.springframework.stereotype.Service;
 import ys.fileman.prototype.api.assembler.ResponseAssembler;
 import ys.fileman.prototype.api.dto.PathDTO;
 import ys.fileman.prototype.api.dto.ResponseDTO;
+import ys.fileman.prototype.domen.Credentials;
 import ys.fileman.prototype.domen.File;
 import ys.fileman.prototype.domen.Path;
 import ys.fileman.prototype.domen.Transport;
-import ys.fileman.prototype.service.FileService;
+import ys.fileman.prototype.service.AuthService;
 import ys.fileman.prototype.service.TransportService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,21 +17,21 @@ import java.util.List;
 @Service
 public class FileServiceFacade {
 
-    private final FileService fileService;
+    private final AuthService authService;
     private final TransportService transportService;
     private final ResponseAssembler responseAssembler;
 
-    public FileServiceFacade(FileService fileService, TransportService transportService,
-                             ResponseAssembler responseAssembler) {
-        this.fileService = fileService;
+    public FileServiceFacade(AuthService authService, TransportService transportService, ResponseAssembler responseAssembler) {
+        this.authService = authService;
         this.transportService = transportService;
         this.responseAssembler = responseAssembler;
     }
 
     public ResponseDTO list(HttpServletRequest httpServletRequest, String brand, String contract, String account,
                             String token, PathDTO pathDTO) {
-        Transport transport = transportService.getFTPTransport(brand, contract, account, token);
-        List<File> fileList = fileService.list(transport, new Path(pathDTO.getPath()));
+        Credentials credentials = authService.getCredentials(brand, contract, account, token);
+        Transport transport = transportService.getFTPTransport(credentials);
+        List<File> fileList = transport.list(new Path(pathDTO.getPath()));
         ResponseDTO<List<File>> responseDTO = responseAssembler.getSuccessResponse(httpServletRequest);
         responseDTO.setData(fileList);
 
