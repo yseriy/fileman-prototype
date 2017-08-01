@@ -15,7 +15,7 @@ public class ModelFactory {
         return new FmUserId(brand, contract, account);
     }
 
-    public CredentialsCacheRow getCredentialsCacheRow(FmUserId fmUserId, Credentials credentials) {
+    CredentialsCacheRow getCredentialsCacheRow(FmUserId fmUserId, Credentials credentials) {
         return new CredentialsCacheRow(fmUserId, credentials);
     }
 
