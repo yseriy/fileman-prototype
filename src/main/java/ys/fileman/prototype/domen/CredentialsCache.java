@@ -24,7 +24,7 @@ public class CredentialsCache {
     }
 
     public Boolean isRowValid(CredentialsCacheRow cacheRow, FmUserId fmUserId) {
-        return cacheRow.getFmUserId().canEqual(fmUserId);
+        return cacheRow.getFmUserId().equals(fmUserId);
     }
 
     public void deleteCredentials(Token token) {
