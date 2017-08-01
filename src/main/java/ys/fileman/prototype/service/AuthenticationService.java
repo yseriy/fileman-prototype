@@ -52,24 +52,22 @@ public class AuthenticationService {
 
     private Credentials parseResponse(ResponseEntity<String> response) throws IOException {
         JsonNode root = objectMapper.readTree(response.getBody());
-        JsonNode serverNode = root.path("response").path("data").path("ftp_farm_ip");
 
-        if (serverNode.isMissingNode()) {
-            throw new RuntimeException("cannot find farm ip");
-        }
+        JsonNode serverNode = root.path("response").path("data").path("ftp_farm_ip");
+        checkError(serverNode, "cannot find farm ip");
 
         JsonNode loginNode = root.path("response").path("data").path("ftp_user");
-
-        if (loginNode.isMissingNode()) {
-            throw new RuntimeException("cannot find user login");
-        }
+        checkError(loginNode, "cannot find user login");
 
         JsonNode passwordNode = root.path("response").path("data").path("ftp_pass");
-
-        if (passwordNode.isMissingNode()) {
-            throw new RuntimeException("cannot find user password");
-        }
+        checkError(passwordNode, "cannot find user password");
 
         return modelFactory.getCredentials(serverNode.asText(), loginNode.asText(), passwordNode.asText());
+    }
+
+    private void checkError(JsonNode jsonNode, String errorMessage) {
+        if (jsonNode.isMissingNode()) {
+            throw new RuntimeException(errorMessage);
+        }
     }
 }
