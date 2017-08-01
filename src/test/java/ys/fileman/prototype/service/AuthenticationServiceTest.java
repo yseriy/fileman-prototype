@@ -10,7 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import ys.fileman.prototype.domen.Credentials;
+import ys.fileman.prototype.domen.FmUserId;
 import ys.fileman.prototype.domen.ModelFactory;
+import ys.fileman.prototype.domen.Token;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -33,8 +35,11 @@ public class AuthenticationServiceTest {
         String contract = "test_contract";
         String account = "test_account";
 
-        String tokenName = "FTP-AUTH-TOKEN";
+        String tokenHeaderName = "FTP-AUTH-TOKEN";
         String tokenValue = "test_token";
+
+        Token token = new Token(tokenValue);
+        FmUserId fmUserId = new FmUserId(brand, contract, account);
 
         String urlTemplate = "http://%s/brands/%s/contracts/%s/accounts/%s/services/ftp/credentials";
         String url = String.format(urlTemplate, host, brand, contract, account);
@@ -45,10 +50,10 @@ public class AuthenticationServiceTest {
         mockRestServiceServer
                 .expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andExpect(header(tokenName, tokenValue))
+                .andExpect(header(tokenHeaderName, tokenValue))
                 .andRespond(withSuccess(responseExpectedFile, MediaType.APPLICATION_JSON));
 
-        Credentials credentials = authenticationService.getCredentials(brand, contract, account, tokenValue);
+        Credentials credentials = authenticationService.getCredentials(fmUserId, token);
 
         mockRestServiceServer.verify();
         assertNotNull(credentials);

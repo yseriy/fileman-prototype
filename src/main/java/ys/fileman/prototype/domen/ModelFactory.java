@@ -11,7 +11,7 @@ public class ModelFactory {
         return new Token(value);
     }
 
-    public FmUserId getFMUserId(String brand, String contract, String account) {
+    public FmUserId getFmUserId(String brand, String contract, String account) {
         return new FmUserId(brand, contract, account);
     }
 
