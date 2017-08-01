@@ -15,12 +15,16 @@ public class CredentialsCache {
         this.modelFactory = modelFactory;
     }
 
-    public void addCredentials(Token token, FmUserId fmUserId, Credentials credentials) {
+    public void addCredentials(Token token, Credentials credentials, FmUserId fmUserId) {
         credentialsCache.put(token, modelFactory.getCredentialsCacheRow(fmUserId, credentials));
     }
 
-    public CredentialsCacheRow getCredentials(Token token) {
+    public CredentialsCacheRow getCredentialsCacheRow(Token token) {
         return credentialsCache.get(token);
+    }
+
+    public Boolean isRowValid(CredentialsCacheRow cacheRow, FmUserId fmUserId) {
+        return cacheRow.getFmUserId().canEqual(fmUserId);
     }
 
     public void deleteCredentials(Token token) {
