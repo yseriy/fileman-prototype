@@ -11,6 +11,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ys.fileman.prototype.domen.Credentials;
+import ys.fileman.prototype.domen.ModelFactory;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -22,11 +23,13 @@ public class AuthenticationService {
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private final ModelFactory modelFactory;
 
     public AuthenticationService(RestTemplateBuilder restTemplateBuilder,
-                                 Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
+                                 Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder, ModelFactory modelFactory) {
         restTemplate = restTemplateBuilder.build();
         objectMapper = jackson2ObjectMapperBuilder.build();
+        this.modelFactory = modelFactory;
     }
 
     public Credentials getCredentials(String brand, String contract, String account, String token) throws IOException {
@@ -49,24 +52,22 @@ public class AuthenticationService {
 
     private Credentials parseResponse(ResponseEntity<String> response) throws IOException {
         JsonNode root = objectMapper.readTree(response.getBody());
-        JsonNode serverNode = root.path("response").path("data").path("ftp_farm_ip");
 
-        if (serverNode.isMissingNode()) {
-            throw new RuntimeException("cannot find farm ip");
-        }
+        JsonNode serverNode = root.path("response").path("data").path("ftp_farm_ip");
+        checkError(serverNode, "cannot find farm ip");
 
         JsonNode loginNode = root.path("response").path("data").path("ftp_user");
-
-        if (loginNode.isMissingNode()) {
-            throw new RuntimeException("cannot find user login");
-        }
+        checkError(loginNode, "cannot find user login");
 
         JsonNode passwordNode = root.path("response").path("data").path("ftp_pass");
+        checkError(passwordNode, "cannot find user password");
 
-        if (passwordNode.isMissingNode()) {
-            throw new RuntimeException("cannot find user password");
+        return modelFactory.getCredentials(serverNode.asText(), loginNode.asText(), passwordNode.asText());
+    }
+
+    private void checkError(JsonNode jsonNode, String errorMessage) {
+        if (jsonNode.isMissingNode()) {
+            throw new RuntimeException(errorMessage);
         }
-
-        return new Credentials(serverNode.asText(), loginNode.asText(), passwordNode.asText());
     }
 }
