@@ -20,20 +20,22 @@ public class TransportService {
 
     public Transport getFTPTransport(Credentials credentials) throws IOException {
         FTPClient ftpClient = modelFactory.getFTPClient();
+
         ftpClient.connect(credentials.getServer());
+        checkError(ftpClient, String.format("cannot connect ftp server: %s", credentials.getServer()));
 
-        if (!FTPReply.isPositiveCompletion(ftpClient.getReplyCode())) {
-            ftpClient.disconnect();
-            throw new RuntimeException(String.format("cannot connect ftp server: %s. reply code: %s, reply message: %s",
-                    credentials.getServer(), ftpClient.getReplyCode(), ftpClient.getReplyString().trim()));
-        }
-
-        if (ftpClient.login(credentials.getLogin(), credentials.getPassword())) {
-            ftpClient.disconnect();
-            throw new RuntimeException(String.format("cannot login to ftp server: %s. reply code: %s, reply message: %s",
-                    credentials.getServer(), ftpClient.getReplyCode(), ftpClient.getReplyString().trim()));
-        }
+        ftpClient.login(credentials.getLogin(), credentials.getPassword());
+        checkError(ftpClient, String.format("cannot login to ftp server: %s, login: %s",
+                credentials.getServer(), credentials.getLogin()));
 
         return modelFactory.getFTPTransport(ftpClient);
+    }
+
+    private void checkError(FTPClient ftpClient, String errorMessage) throws IOException {
+        if (!FTPReply.isPositiveCompletion(ftpClient.getReplyCode())) {
+            ftpClient.disconnect();
+            throw new RuntimeException(String.format("%s. reply code: %s, reply message: %s",
+                    errorMessage, ftpClient.getReplyCode(), ftpClient.getReplyString().trim()));
+        }
     }
 }
