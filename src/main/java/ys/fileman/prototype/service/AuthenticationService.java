@@ -11,6 +11,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ys.fileman.prototype.domen.Credentials;
+import ys.fileman.prototype.domen.ModelFactory;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -22,11 +23,13 @@ public class AuthenticationService {
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private final ModelFactory modelFactory;
 
     public AuthenticationService(RestTemplateBuilder restTemplateBuilder,
-                                 Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
+                                 Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder, ModelFactory modelFactory) {
         restTemplate = restTemplateBuilder.build();
         objectMapper = jackson2ObjectMapperBuilder.build();
+        this.modelFactory = modelFactory;
     }
 
     public Credentials getCredentials(String brand, String contract, String account, String token) throws IOException {
@@ -67,6 +70,6 @@ public class AuthenticationService {
             throw new RuntimeException("cannot find user password");
         }
 
-        return new Credentials(serverNode.asText(), loginNode.asText(), passwordNode.asText());
+        return modelFactory.getCredentials(serverNode.asText(), loginNode.asText(), passwordNode.asText());
     }
 }

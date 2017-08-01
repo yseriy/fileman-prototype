@@ -7,6 +7,10 @@ import ys.fileman.prototype.domen.transport.FTPTransport;
 @Service
 public class ModelFactory {
 
+    public Credentials getCredentials(String server, String login, String password) {
+        return new Credentials(server, login, password);
+    }
+
     public FTPClient getFTPClient() {
         return new FTPClient();
     }
