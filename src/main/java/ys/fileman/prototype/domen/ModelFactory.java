@@ -7,6 +7,14 @@ import ys.fileman.prototype.domen.transport.FTPTransport;
 @Service
 public class ModelFactory {
 
+    public Token getToken(String value) {
+        return new Token(value);
+    }
+
+    public FmUserId getFmUserId(String brand, String contract, String account) {
+        return new FmUserId(brand, contract, account);
+    }
+
     public Credentials getCredentials(String server, String login, String password) {
         return new Credentials(server, login, password);
     }

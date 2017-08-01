@@ -11,7 +11,9 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ys.fileman.prototype.domen.Credentials;
+import ys.fileman.prototype.domen.FmUserId;
 import ys.fileman.prototype.domen.ModelFactory;
+import ys.fileman.prototype.domen.Token;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -32,19 +34,19 @@ public class AuthenticationService {
         this.modelFactory = modelFactory;
     }
 
-    public Credentials getCredentials(String brand, String contract, String account, String token) throws IOException {
+    public Credentials getCredentials(FmUserId fmUserId, Token token) throws IOException {
         String url = "http://{host}/brands/{brand}/contracts/{contract}/accounts/{account}/services/ftp/credentials";
         String tokenHeaderName = "FTP-AUTH-TOKEN";
         String host = "test_host";
 
         Map<String, String> urlVariables = new HashMap<>();
         urlVariables.put("host", host);
-        urlVariables.put("brand", brand);
-        urlVariables.put("contract", URLEncoder.encode(contract, "UTF-8"));
-        urlVariables.put("account", account);
+        urlVariables.put("brand", fmUserId.getBrand());
+        urlVariables.put("contract", URLEncoder.encode(fmUserId.getContract(), "UTF-8"));
+        urlVariables.put("account", fmUserId.getAccount());
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(tokenHeaderName, token);
+        httpHeaders.add(tokenHeaderName, token.getValue());
         HttpEntity httpEntity = new HttpEntity(httpHeaders);
 
         return parseResponse(restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class, urlVariables));

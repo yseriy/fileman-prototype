@@ -4,10 +4,7 @@ import org.springframework.stereotype.Service;
 import ys.fileman.prototype.api.assembler.ResponseAssembler;
 import ys.fileman.prototype.api.dto.PathDTO;
 import ys.fileman.prototype.api.dto.ResponseDTO;
-import ys.fileman.prototype.domen.Credentials;
-import ys.fileman.prototype.domen.File;
-import ys.fileman.prototype.domen.Path;
-import ys.fileman.prototype.domen.Transport;
+import ys.fileman.prototype.domen.*;
 import ys.fileman.prototype.service.AuthenticationService;
 import ys.fileman.prototype.service.TransportService;
 
@@ -30,7 +27,7 @@ public class FileServiceFacade {
 
     public ResponseDTO list(HttpServletRequest httpServletRequest, String brand, String contract, String account,
                             String token, PathDTO pathDTO) throws IOException {
-        Credentials credentials = authenticationService.getCredentials(brand, contract, account, token);
+        Credentials credentials = authenticationService.getCredentials(new FmUserId(brand, contract, account), new Token(token));
         Transport transport = transportService.getFTPTransport(credentials);
         List<File> fileList = transport.list(new Path(pathDTO.getPath()));
         ResponseDTO<List<File>> responseDTO = responseAssembler.getSuccessResponse(httpServletRequest);

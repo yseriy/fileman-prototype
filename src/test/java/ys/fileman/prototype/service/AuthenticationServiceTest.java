@@ -4,16 +4,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import ys.fileman.prototype.domen.Credentials;
+import ys.fileman.prototype.domen.FmUserId;
 import ys.fileman.prototype.domen.ModelFactory;
+import ys.fileman.prototype.domen.Token;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -33,27 +33,35 @@ public class AuthenticationServiceTest {
         String contract = "test_contract";
         String account = "test_account";
 
-        String tokenName = "FTP-AUTH-TOKEN";
+        String server = "test_server";
+        String login = "test_login";
+        String password = "test_password";
+
+        String tokenHeaderName = "FTP-AUTH-TOKEN";
         String tokenValue = "test_token";
+
+        Token token = new Token(tokenValue);
+        FmUserId fmUserId = new FmUserId(brand, contract, account);
 
         String urlTemplate = "http://%s/brands/%s/contracts/%s/accounts/%s/services/ftp/credentials";
         String url = String.format(urlTemplate, host, brand, contract, account);
 
-        String fmResponseFilePath = "src/test/resources/fm_response.json";
-        FileSystemResource responseExpectedFile = new FileSystemResource(fmResponseFilePath);
+        String fmResponseTemplate = "{\"response\": {\"data\": {\"ftp_farm_ip\": \"%s\", \"ftp_user\": \"%s\", \"ftp_pass\": \"%s\"}}}";
+        String fmResponse = String.format(fmResponseTemplate, server, login, password);
 
         mockRestServiceServer
                 .expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andExpect(header(tokenName, tokenValue))
-                .andRespond(withSuccess(responseExpectedFile, MediaType.APPLICATION_JSON));
+                .andExpect(header(tokenHeaderName, tokenValue))
+                .andRespond(withSuccess(fmResponse, MediaType.APPLICATION_JSON));
 
-        Credentials credentials = authenticationService.getCredentials(brand, contract, account, tokenValue);
+        Credentials credentials = authenticationService.getCredentials(fmUserId, token);
 
         mockRestServiceServer.verify();
-        assertNotNull(credentials);
-        assertEquals(credentials.getServer(), "test_server");
-        assertEquals(credentials.getLogin(), "test_user");
-        assertEquals(credentials.getPassword(), "test_pass");
+
+        assertThat(credentials).isNotNull();
+        assertThat(credentials.getServer()).isEqualTo(server);
+        assertThat(credentials.getLogin()).isEqualTo(login);
+        assertThat(credentials.getPassword()).isEqualTo(password);
     }
 }

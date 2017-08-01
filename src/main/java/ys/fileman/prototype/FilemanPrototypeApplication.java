@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class FilemanPrototypeApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(FilemanPrototypeApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(FilemanPrototypeApplication.class, args);
+    }
 }
