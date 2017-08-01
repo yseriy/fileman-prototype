@@ -1,9 +1,0 @@
-{
-  "response": {
-    "data": {
-      "ftp_farm_ip": "test_server",
-      "ftp_user": "test_user",
-      "ftp_pass": "test_pass"
-    }
-  }
-}
