@@ -15,6 +15,10 @@ public class ModelFactory {
         return new FmUserId(brand, contract, account);
     }
 
+    public CredentialsCacheRow getCredentialsCacheRow(FmUserId fmUserId, Credentials credentials) {
+        return new CredentialsCacheRow(fmUserId, credentials);
+    }
+
     public Credentials getCredentials(String server, String login, String password) {
         return new Credentials(server, login, password);
     }
