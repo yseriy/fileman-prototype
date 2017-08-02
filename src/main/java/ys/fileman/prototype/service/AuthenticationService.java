@@ -49,10 +49,13 @@ public class AuthenticationService {
         httpHeaders.add(tokenHeaderName, token.getValue());
         HttpEntity httpEntity = new HttpEntity(httpHeaders);
 
-        return parseResponse(restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class, urlVariables));
+        ResponseEntity<String> response =
+                restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class, urlVariables);
+
+        return parseResponse(response, fmUserId);
     }
 
-    private Credentials parseResponse(ResponseEntity<String> response) throws IOException {
+    private Credentials parseResponse(ResponseEntity<String> response, FmUserId fmUserId) throws IOException {
         JsonNode root = objectMapper.readTree(response.getBody());
 
         JsonNode serverNode = root.path("response").path("data").path("ftp_farm_ip");
@@ -64,7 +67,7 @@ public class AuthenticationService {
         JsonNode passwordNode = root.path("response").path("data").path("ftp_pass");
         checkError(passwordNode, "cannot find user password");
 
-        return modelFactory.getCredentials(serverNode.asText(), loginNode.asText(), passwordNode.asText());
+        return modelFactory.getCredentials(serverNode.asText(), loginNode.asText(), passwordNode.asText(), fmUserId);
     }
 
     private void checkError(JsonNode jsonNode, String errorMessage) {

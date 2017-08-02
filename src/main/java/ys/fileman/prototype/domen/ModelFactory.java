@@ -15,12 +15,12 @@ public class ModelFactory {
         return new FmUserId(brand, contract, account);
     }
 
-    CredentialsCacheRow getCredentialsCacheRow(FmUserId fmUserId, Credentials credentials) {
-        return new CredentialsCacheRow(fmUserId, credentials);
+    CredentialsCacheRow getCredentialsCacheRow(Credentials credentials) {
+        return new CredentialsCacheRow(credentials);
     }
 
-    public Credentials getCredentials(String server, String login, String password) {
-        return new Credentials(server, login, password);
+    public Credentials getCredentials(String server, String login, String password, FmUserId fmUserId) {
+        return new Credentials(server, login, password, fmUserId);
     }
 
     public FTPClient getFTPClient() {

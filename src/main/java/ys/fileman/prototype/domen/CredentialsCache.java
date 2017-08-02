@@ -8,6 +8,8 @@ import java.util.concurrent.ConcurrentMap;
 @Service
 public class CredentialsCache {
 
+    private static final Long CACHE_TIMEOUT = 3L;
+
     private final ConcurrentMap<Token, CredentialsCacheRow> credentialsCache = new ConcurrentHashMap<>();
     private final ModelFactory modelFactory;
 
@@ -15,19 +17,15 @@ public class CredentialsCache {
         this.modelFactory = modelFactory;
     }
 
-    public void addCredentials(Token token, Credentials credentials, FmUserId fmUserId) {
-        credentialsCache.put(token, modelFactory.getCredentialsCacheRow(fmUserId, credentials));
+    void addCredentials(Token token, Credentials credentials) {
+        credentialsCache.put(token, modelFactory.getCredentialsCacheRow(credentials));
     }
 
-    public CredentialsCacheRow getCredentialsCacheRow(Token token) {
-        return credentialsCache.get(token);
+    Credentials getCredentials(Token token) {
+        return credentialsCache.get(token) != null ? credentialsCache.get(token).getCredentials() : null;
     }
 
-    public Boolean isRowValid(CredentialsCacheRow cacheRow, FmUserId fmUserId) {
-        return cacheRow.getFmUserId().equals(fmUserId);
-    }
-
-    public void deleteCredentials(Token token) {
-        credentialsCache.remove(token);
+    void cleanCache() {
+        credentialsCache.entrySet().removeIf(entry -> entry.getValue().isExpired(CACHE_TIMEOUT));
     }
 }

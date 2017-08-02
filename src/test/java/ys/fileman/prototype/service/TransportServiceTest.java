@@ -31,7 +31,7 @@ public class TransportServiceTest {
         String login = "test_login";
         String password = "test_password";
 
-        Credentials credentials = new Credentials(server, login, password);
+        Credentials credentials = new Credentials(server, login, password, null);
 
         FTPClient mockFtpClient = mock(FTPClient.class);
         when(mockFtpClient.getReplyCode()).thenReturn(200);
